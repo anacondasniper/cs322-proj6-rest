@@ -1,18 +1,30 @@
-version: '3'  # version of compose format 
-
 services:
-  laptop-service:
-    build: ./laptop  
+  db:
+    image: mongo:7
+
+  brevets:
+    build: ./brevets
     volumes:
-      - ./laptop:/usr/src/app 
+      - ./brevets:/todo
     ports:
-      - 5001:80  # host:container
+      - 5002:5000
+    depends_on:
+      - db
+
+  laptop-service:
+    build: ./laptop
+    volumes:
+      - ./laptop:/usr/src/app
+    ports:
+      - 5001:80
+    depends_on:
+      - db
 
   website:
-    image: php:apache  
+    image: php:apache
     volumes:
-      - ./website:/var/www/html 
+      - ./website:/var/www/html
     ports:
-      - 5000:80  # host:container
+      - 5000:80
     depends_on:
-      - laptop-service  # website is not going to work unless laptop-service is running
+      - laptop-service

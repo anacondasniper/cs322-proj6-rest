@@ -1,0 +1,23 @@
+<!DOCTYPE html>
+<html>
+<head>
+	<title>Submitted Controls</title>
+	<link rel="stylesheet" href="/static/class/calc.css" />
+</head>
+<body>
+	<h1>Submitted Control Times</h1>
+	<table class="control_time_table">
+		<tr><th>Miles</th><th>Km</th><th>Location</th><th>Open</th><th>Close</th></tr>
+		{% for c in controls %}
+		<tr>
+			<td>{{ c.miles }}</td>
+			<td>{{ c.km }}</td>
+			<td>{{ c.location }}</td>
+			<td>{{ c.open }}</td>
+			<td>{{ c.close }}</td>
+		</tr>
+		{% endfor %}
+	</table>
+	<p><a href="/">Back to the calculator</a></p>
+</body>
+</html>

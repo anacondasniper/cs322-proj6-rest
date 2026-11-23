@@ -1,150 +1,81 @@
-# Project 6: Brevet time calculator service
+# Project 6: Brevet Times REST API (DockerRestAPI)
 
-Simple listing service from project 5 stored in MongoDB database.
+**Author:** Milo Reynolds
+**Email:** miloreyn@uoregon.edu
 
-## What is in this repository
+A three-part Docker Compose app built on the ACP brevet control-time calculator from Projects 4 and 5.
 
-You have a minimal implementation of Docker compose in DockerRestAPI folder, using which you can create REST API-based services (as demonstrated in class). 
+1. **Calculator** (Flask, Ajax, MongoDB): enter controls, Submit stores them in MongoDB, Display shows what was stored.
+2. **REST API** (Flask): exposes the stored open and close times as JSON or CSV.
+3. **Consumer** (PHP, separate container): a web page that reads the API and lets you pick which list to show and how many rows (`top`).
 
-## Recap 
+## Running
 
-You will reuse *your* code from project 5 (https://bitbucket.org/UOCIS322/proj5-mongo). Recall: you created the following functionalities.
+Requires Docker with the Compose plugin.
 
-1. Two buttons ("Submit") and ("Display") in the page where you have controle times.
-2. On clicking the Submit button, the control times were be entered into the database.
-3. On clicking the Display button, the entries from the database were be displayed in a new page.
-4. You also handled error cases appropriately.
-
-## Functionality you will add
-
-This project has following four parts. Change the values for host and port according to your machine, and use the web browser to check the results.
-
-* You will design RESTful service to expose what is stored in MongoDB. Specifically, you'll use the boilerplate given in DockerRestAPI folder, and create the following three basic APIs:
-    * `http://<host:port>/listAll` should return all open and close times in the database
-    * `http://<host:port>/listOpenOnly` should return open times only
-    * `http://<host:port>/listCloseOnly` should return close times only
-
-* You will also design two different representations: one in csv and one in json. For the above three basic APIs, JSON should be your default representation. 
-    * `http://<host:port>/listAll/csv` should return all open and close times in CSV format
-    * `http://<host:port>/listOpenOnly/csv` should return open times only in CSV format
-    * `http://<host:port>/listCloseOnly/csv` should return close times only in CSV format
-
-    * `http://<host:port>/listAll/json` should return all open and close times in JSON format
-    * `http://<host:port>/listOpenOnly/json` should return open times only in JSON format
-    * `http://<host:port>/listCloseOnly/json` should return close times only in JSON format
-
-* You will also add a query parameter to get top "k" open and close times. For examples, see below.
-
-    * `http://<host:port>/listOpenOnly/csv?top=3` should return top 3 open times only (in ascending order) in CSV format 
-    * `http://<host:port>/listOpenOnly/json?top=5` should return top 5 open times only (in ascending order) in JSON format
-    * `http://<host:port>/listCloseOnly/csv?top=6` should return top 5 close times only (in ascending order) in CSV format
-    * `http://<host:port>/listCloseOnly/json?top=4` should return top 4 close times only (in ascending order) in JSON format
-
-* You'll also design consumer programs (e.g., in jQuery) to use the service that you expose. "website" inside DockerRestAPI is an example of that. It is uses PHP. You're welcome to use either PHP or jQuery to consume your services. NOTE: your consumer program should be in a different container like example in DockerRestAPI.
-
-## Data Samples
-
-The sample data files ([sample-data.json](data-samples/sample-data.json), [sample-data.csv](data-samples/sample-data.csv), and [sample-data-pivoted.csv](data-samples/sample-data-pivoted.csv)) provide a suggested JSON and CSV format that you could follow for your exports. 
-
-1. JSON
-```json
-{
-   "brevets":[
-      {
-         "distance":200,
-         "begin_date":"12/01/2021",
-         "begin_time":"18:06",
-         "controls":[
-            {
-               "km":0,
-               "mi":0,
-               "location":"begin",
-               "open":"12/01/2021 18:06",
-               "close":"12/01/2021 19:06"
-            },
-            {
-               "km":100,
-               "mi":62,
-               "location":null,
-               "open":"12/01/2021 21:02",
-               "close":"12/02/2021 00:46"
-            },
-            {
-               "km":150,
-               "mi":93,
-               "location":"second checkpoint",
-               "open":"12/01/2021 22:31",
-               "close":"12/02/2021 04:06"
-            },
-            {
-               "km":200,
-               "mi":124,
-               "location":"last checkpoint",
-               "open":"12/01/2021 23:59",
-               "close":"12/02/2021 07:36"
-            }
-         ]
-      },
-      {
-         "distance":1000,
-         "begin_date":"01/01/2022",
-         "begin_time":"00:00",
-         "controls":[
-            {
-               "km":0,
-               "mi":0,
-               "location":"begin",
-               "open":"01/01/2022 00:00",
-               "close":"01/01/2022 01:00"
-            },
-            {
-               "km":1000,
-               "mi":621,
-               "location":"finish line",
-               "open":"01/01/2022 09:05",
-               "close":"01/04/2022 03:00"
-            }
-         ]
-      }
-   ]
-}
+```
+docker compose up --build
 ```
 
-2. CSV
-```csv
-brevets/distance,brevets/begin_date,brevets/begin_time,brevets/controls/0/km,brevets/controls/0/mi,brevets/controls/0/location,brevets/controls/0/open,brevets/controls/0/close,brevets/controls/1/km,brevets/controls/1/mi,brevets/controls/1/location,brevets/controls/1/open,brevets/controls/1/close,brevets/controls/2/km,brevets/controls/2/mi,brevets/controls/2/location,brevets/controls/2/open,brevets/controls/2/close,brevets/controls/3/km,brevets/controls/3/mi,brevets/controls/3/location,brevets/controls/3/open,brevets/controls/3/close
-200,12/01/2021,18:06,0,0,begin,12/01/2021 18:06,12/01/2021 19:06,100,62,,12/01/2021 21:02,12/02/2021 00:46,150,93,second checkpoint,12/01/2021 22:31,12/02/2021 04:06,200,124,last checkpoint,12/01/2021 23:59,12/02/2021 07:36
-1000,01/01/2022,00:00,0,0,begin,01/01/2022 00:00,01/01/2022 01:00,1000,621,finish line,01/01/2022 09:05,01/04/2022 03:00,,,,,,,,,,
+| Part | URL |
+|---|---|
+| Consumer web page | http://localhost:5000 |
+| REST API | http://localhost:5001 |
+| Calculator | http://localhost:5002 |
+
+Open the calculator, enter some controls and press **Submit** first. The API reads from the same MongoDB database, so it has nothing to return until data has been submitted. Submitting again replaces the previously stored controls.
+
+## API
+
+| Path | Returns |
+|---|---|
+| `/listAll`, `/listAll/json` | open and close times, JSON |
+| `/listAll/csv` | open and close times, CSV |
+| `/listOpenOnly`, `/listOpenOnly/json` | open times only, JSON |
+| `/listOpenOnly/csv` | open times only, CSV |
+| `/listCloseOnly`, `/listCloseOnly/json` | close times only, JSON |
+| `/listCloseOnly/csv` | close times only, CSV |
+
+JSON is the default representation. Each JSON entry is an object such as `{"open": "...", "close": "..."}`. CSV output has a header line (`open,close`, `open` or `close`) followed by one line per control.
+
+### Top k
+
+Add `?top=k` to any URL to get only the first k entries, in ascending order. For example `/listAll/csv?top=3` returns the three earliest controls.
+
+- `listAll` and `listOpenOnly` are ordered by open time; `listCloseOnly` is ordered by close time. So `top=k` on `listCloseOnly` returns the k earliest closing times.
+- Times are stored as ISO 8601 strings with the same UTC offset, so sorting them as strings gives chronological order.
+- `top=k` returns exactly k entries (or fewer if fewer exist).
+
+### Decisions
+
+- A `top` that is not a whole number, or is less than 1, returns HTTP 400.
+- If the database is empty, the JSON endpoints return `[]` and the CSV endpoints return only the header line.
+
+## Consumer
+
+The PHP page runs in its own container and reaches the API over the Compose network at `http://laptop-service`. It has a drop-down to choose all, open only or close only, and a `top` box. If the API rejects the request (for example `top=0`), the page shows an error message.
+
+## Tests
+
+The calculator tests live in `brevets/` and run with `pynose` (a maintained fork of nose):
+
+```
+cd DockerRestAPI/brevets
+nosetests
 ```
 
-## Tasks
+They cover the open and close time calculations and the input validation used by Submit.
 
-You'll turn in your credentials.ini (including the keys `author` and `repo` under the section `[DEFAULT]`) using which we will get the following:
+## Configuration
 
-* The working application with three parts.
+Calculator settings come from `brevets/app.ini` (committed, with a placeholder secret key) and optionally `brevets/credentials.ini` (not committed). The submitted `credentials.ini` contains `author` and `repo` under `[DEFAULT]`.
 
-* Dockerfile
+## Layout
 
-* docker-compose.yml
-
-## Grading Rubric
-
-* If your code works as expected: 100 points. This includes:
-    * Basic APIs work as expected. (15 points)
-    * Representations work as expected. (30 points)
-    * Query parameter-based APIs work as expected. (10 points)
-    * Consumer program works as expected. (10 points)
-
-* For each non-working API, 5 points will be docked off. If none of them work,
-  you'll get 35 points assuming
-    * README is updated with your name and email ID. (5 points)
-    * The credentials.ini is submitted with the correct URL of your repo. (15 points)
-    * Dockerfile is present. 
-    * Docker-compose.yml works/builds without any errors. (15 points)
-
-* If README is not updated, 5 points will be docked off. 
-
-* If the Docker-compose.yml doesn't build or is missing, 15 points will be
-  docked off. Same for Dockerfile as well.
-
-* If credentials.ini is missing, 0 will be assigned.
+```
+DockerRestAPI/
+  docker-compose.yml
+  brevets/    calculator (Flask + Ajax + MongoDB), tests
+  laptop/     REST API (Flask)
+  website/    consumer (PHP)
+```
